@@ -1,16 +1,10 @@
-# E:/newpy/wuziqi/wuziqi/wuziqi.py
+# python3 /users/haoransong/Desktop/python/5qi.py
 
 import json
 
 def wuziqi():
-	with open('E:/newpy/wuziqi/qipu.txt','r') as f:
-		x = f.read()
-		if x != '':
-			a = json.loads(x)
-		else:
-			a = make_board()
-		f.close()
 
+	a = make_board()
 	x = []
 	for i in range(13):
 		x.append([])
@@ -20,35 +14,40 @@ def wuziqi():
 	z1 = []
 	for i in range(25):
 		z1.append([])
-		if i <= 13:
+		if i <= 12:
 			n = i+1
 		else:
 			n = 25-i
 		for i1 in range(n):
 			z1[-1].append(0)
-	z2=z1[:]
+	# z2=z1[:]
+	z2 = []
+	for i in range(25):
+		z2.append([])
+		if i <= 12:
+			n = i+1
+		else:
+			n = 25-i
+		for i1 in range(n):
+			z2[-1].append(0)
+	
 	b = ['a','b','c','d','e','f','g','h','i','j','k','l','m']
-	# b1 = ['A','B','C','D','E','F','G','H','I','J','K','L','M']
 	bw = 0
 	
-
-
 	while True:
+		btn = bw%2+1		
 		print_board(a)
-		move = input('next?\n').lower()
-		btn = bw%2+1
-
+		if btn == 1:
+			move = input('next?\n').lower()
+		else:
+			move = robot([x,y,z1,z2],bw%2+1)
+			if not move:
+				move = input('next?\n').lower()
 
 		if move == 'aaa':
-			with open('E:/newpy/wuziqi/qipu.txt','w') as f:
-				f.close()
-				break
-		
+				break			
 		elif move == 'save':
-			with open('E:/newpy/wuziqi/qipu.txt','w') as f:
-				f.write(json.dumps(a))
-				f.close()
-				break
+			break
 		
 		if move[0] in b:
 			if int(move[1:]) <= 13:
@@ -63,6 +62,7 @@ def wuziqi():
 		if move[0] in b:
 			xx = int(move[1:])-1
 			yy = b.index(move[0])
+			# print(xx,yy)
 			if a[xx][yy] != '.':
 				print('error')
 				continue
@@ -92,15 +92,14 @@ def wuziqi():
 				z2[12+xx-yy][xx] = btn
 				a[xx][yy] = btn
 		
-		if if_win([x,y,z1,z2],bw%2+1):
-			bwf = bw%2+1
+		
+		if if_win([x,y,z1,z2],btn):
 			print_board(a)
-			print('%s win' % bwf)
-			
+			print('%s win' % btn)
 			break
+		
+
 		bw += 1
-
-
 
 def make_board():
 	a = []	
@@ -124,28 +123,52 @@ def print_board(a):
 		else:
 			print('',x,'',board,'',x)
 	print('    ','A','','B','','C','','D','','E','','F','','G','','H','','I','','J','','K','','L','','M')
-	# print('board')
 
 def if_win(a,bw):
-	# pass
 	fi = 0
 	for i in a:
 		for i1 in i:
-			for i2 in i1:
-				
+			for i2 in i1:				
 				if i2 == bw:
 					fi += 1
 					if fi == 5:
-						# print(a)
-						# print(i1)
-						# print(i2)
-						# print(bw,fi)
-
 						return True
 				else:
 					fi = 0
-def robot():
-	pass
+
+def robot(a,bw):
+	all_ma = ['02222','22220','22022','01111','11110','11011','022200','002220','020220','022020','011100','001110','010110','011010','22200','02220','20220','22020','000220','022000','002200','020200','002020','11100','01110','10110','11010','000110','011000','001100','010100','001010']
+	b = ['a','b','c','d','e','f','g','h','i','j','k','l','m']
+	all_ind = []
+	print('aaaaaa')
+	
+	for i in range(len(a)):
+		for i1 in range(len(a[i])):
+			num = ''
+			for i2 in a[i][i1]:
+				num += '%s' % i2
+			# print(num)
+			
+			for o in all_ma:
+				if o in num:
+					print('in')
+					for t in range(len(o)):
+						if o[t] == '0':
+							all_ind.append(t)
+					lo = num.index(o)
+					print(lo,t)
+					return(loc(lo+all_ind[-1],i,i1,b))
+							
+
+def loc(lo,i,i1,b):
+
+	print(lo,i,i1)
+	if i == 1:
+		return '%s' % b[i1] + '%s' % (lo)
+	elif i == 0:
+		return '%s' % b[lo-1] + '%s' % (i1+1)
+	elif i == 2:
+		pass
 
 if __name__ == '__main__':
 	wuziqi()
