@@ -1,8 +1,8 @@
 # python3 /users/haoransong/Desktop/python/5qi.py
 
-import json
+import random
 
-def wuziqi():
+def play_wuziqi():
 
 	a = make_board()
 	x = []
@@ -10,7 +10,12 @@ def wuziqi():
 		x.append([])
 		for i1 in range(13):
 			x[-1].append(0)
-	y = x[:]
+	y = []
+	for i in range(13):
+		y.append([])
+		for i1 in range(13):
+			y[-1].append(0)
+
 	z1 = []
 	for i in range(25):
 		z1.append([])
@@ -40,9 +45,9 @@ def wuziqi():
 		if btn == 1:
 			move = input('next?\n').lower()
 		else:
-			move = robot([x,y,z1,z2],bw%2+1)
+			move = robot([x,y,z1,z2],bw%2+1,bw)
 			if not move:
-				move = input('next?\n').lower()
+				move = input('nextwhite?\n').lower()
 
 		if move == 'aaa':
 				break			
@@ -62,7 +67,6 @@ def wuziqi():
 		if move[0] in b:
 			xx = int(move[1:])-1
 			yy = b.index(move[0])
-			# print(xx,yy)
 			if a[xx][yy] != '.':
 				print('error')
 				continue
@@ -136,39 +140,73 @@ def if_win(a,bw):
 				else:
 					fi = 0
 
-def robot(a,bw):
-	all_ma = ['02222','22220','22022','01111','11110','11011','022200','002220','020220','022020','011100','001110','010110','011010','22200','02220','20220','22020','000220','022000','002200','020200','002020','11100','01110','10110','11010','000110','011000','001100','010100','001010']
+def robot(a,bw,bw1):
+	if bw1 == 1:
+		if a[0][6][6] == 0:
+			return('g7')
+		else:
+			move_all = ['f6','g6','h6','f7','h7','f8','g8','h8']
+			return(move_all[random.randint(1,8)])
+	all_ma0 = ['02222','22220','22022','20222','22202','01111','11110','11011','11101','10111']
+	all_ma1 = ['022200','002220','020220','022020','001110','010110','011010']
+	all_ma2 = ['22200','02220','20220','22020']
+	all_ma3 = ['000220','022000','002200','020200','002020','11100','01110','10110','11010','00110','00111']#,'000110','011000','001100','010100','001010']
+	move = robot_h(all_ma0,a)
+	if move:
+		return move
+	move = robot_h(all_ma1,a)
+	if move:
+		return move
+	move = robot_h(all_ma2,a)
+	if move:
+		return move
+	move = robot_h(all_ma3,a)
+	if move:
+		return move
+
+def robot_h(all_ma,a):
 	b = ['a','b','c','d','e','f','g','h','i','j','k','l','m']
 	all_ind = []
-	print('aaaaaa')
-	
-	for i in range(len(a)):
-		for i1 in range(len(a[i])):
+	for li in range(len(a)):
+		for i1 in range(len(a[li])):
 			num = ''
-			for i2 in a[i][i1]:
+			for i2 in a[li][i1]:
 				num += '%s' % i2
-			# print(num)
 			
 			for o in all_ma:
 				if o in num:
-					print('in')
+					print('in',o,li)
 					for t in range(len(o)):
 						if o[t] == '0':
 							all_ind.append(t)
 					lo = num.index(o)
-					print(lo,t)
-					return(loc(lo+all_ind[-1],i,i1,b))
+					return(loc(lo+all_ind[-1],li,i1,b))
 							
 
 def loc(lo,i,i1,b):
 
 	print(lo,i,i1)
 	if i == 1:
-		return '%s' % b[i1] + '%s' % (lo)
+		move = '%s' % b[i1] + '%s' % (lo+1)
+		print(move)
+		return move
 	elif i == 0:
-		return '%s' % b[lo-1] + '%s' % (i1+1)
+		move = '%s' % b[lo] + '%s' % (i1+1)
+		print(move)
+		return move
 	elif i == 2:
-		pass
-
+		if i1 < 12:
+			move = '%s' % b[lo] + '%s' %(i1-lo+1)
+		else:
+			move = '%s' % b[12-lo] + '%s' %(i1-11+lo)
+		print(move)
+		return move
+	elif i == 3:
+		if i1 >= 12:
+			move = '%s' % b[lo] + '%s' % (i1-11+lo)
+		else:
+			move = '%s' % b[12-i1+lo] + '%s' % (lo+1)
+		print(move)
+		return move
 if __name__ == '__main__':
-	wuziqi()
+	play_wuziqi()
