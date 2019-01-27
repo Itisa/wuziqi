@@ -63,6 +63,15 @@ def play_wuziqi():
 		else:	
 			print('error')
 			continue
+		if len(move) == 2 or len(move) == 3:
+			if move[0] in b or move[-1] in b:
+				pass
+			else:
+				print('error')
+				continue
+		else:
+			print('error')
+			continuex
 
 		if move[0] in b:
 			xx = int(move[1:])-1
@@ -151,46 +160,25 @@ def robot(a,bw,bw1,b):
 			move_all = ['f6','g6','h6','f7','h7','f8','g8','h8']
 			return(move_all[random.randint(0,7)])
 	all_ma0 = ['02222','22220','22022','20222','22202','01111','11110','11011','11101','10111']
-	all_ma1 = ['22200','00222','02022','22020','01110','10110','11010']
-	all_ma2 = ['22200','02220','20220','22020']
-	all_ma3 = ['02200','2020','11100','01110','10110','11010','01100','00111']#,'000110','011000','001100','010100','001010']
-	all_ma4 = ['20']
-	
-	move = robot_h(all_ma0,a)
-	if move:
-		if move.index(' ') == 1:
-			return '%s' % b[int(move[0])] + '%s' % (int(move[1:])+1)
+	all_ma1 = ['022200','002220','020220','022020']
+	all_ma2 = ['011100','001110','010110','011010']
+	all_ma3 = ['22200','02220','20220','22020']
+	all_ma4 = ['02200','2020','11100','01110','10110','11010','01100','00111']#,'000110','011000','001100','010100','001010']
+	all_ma5 = ['20']
+	all_ma = [all_ma0,all_ma1,all_ma2,all_ma3,all_ma4,all_ma5]
+	for i in range(len(all_ma)):
+		if i == 1:
+			move = robot_h(all_ma[i],a,1)
 		else:
-			return '%s' % b[int(move[:2])] + '%s' % (int(move[3:])+1)
-	
-	move = robot_h(all_ma1,a)
-	if move:
-		if move.index(' ') == 1:
-			return '%s' % b[int(move[0])] + '%s' % (int(move[1:])+1)
-		else:
-			return '%s' % b[int(move[:2])] + '%s' % (int(move[3:])+1)
+			move = robot_h(all_ma[i],a,0)
+		if move:
+			if move.index(' ') == 1:
+				return '%s' % b[int(move[0])] + '%s' % (int(move[1:])+1)
+			else:
+				return '%s' % b[int(move[:2])] + '%s' % (int(move[3:])+1)
 
-	move = robot_h(all_ma2,a)
-	if move:
-		if move.index(' ') == 1:
-			return '%s' % b[int(move[0])] + '%s' % (int(move[1:])+1)
-		else:
-			return '%s' % b[int(move[:2])] + '%s' % (int(move[3:])+1)	
-	
-	move = robot_h(all_ma3,a)
-	if move:
-		if move.index(' ') == 1:
-			return '%s' % b[int(move[0])] + '%s' % (int(move[1:])+1)
-		else:
-			return '%s' % b[int(move[:2])] + '%s' % (int(move[3:])+1)
-
-	move = robot_h(all_ma4,a)
-	if move:
-		if move.index(' ') == 1:
-			return '%s' % b[int(move[0])] + '%s' % (int(move[1:])+1)
-		else:
-			return '%s' % b[int(move[:2])] + '%s' % (int(move[3:])+1)
-def robot_h(all_ma,a):
+		
+def robot_h(all_ma,a,nu):
 	b = ['a','b','c','d','e','f','g','h','i','j','k','l','m']
 	all_ind = []
 	all_move = []
@@ -203,6 +191,14 @@ def robot_h(all_ma,a):
 			for o in all_ma:
 				if o in num:
 					print('in',o,li)
+					if nu == 1:
+						ind = 0
+						for t in o:
+							if t == 0:
+								ind += 1
+								if ind == 2:
+									return loc(num.index(o)+t,li,i1)
+
 					for t in range(len(o)):
 						if o[t] == '0':							
 							all_move.append(loc(num.index(o)+t,li,i1))
@@ -251,11 +247,12 @@ def choose(all_move,a):
 		if i > ma:
 			ma = i
 	co = grade_all.count(ma)
-	print(grade_all,ma,co,all_move)
+	print(grade_all,ma,co,all_move,end = '')
 	if co == 1:
 		return all_move[grade_all.index(ma)]
 	else:
 		ind = random.randint(1,co)
+		print(ind)
 		ix = 0
 		i1 = -1
 		for i in grade_all:
