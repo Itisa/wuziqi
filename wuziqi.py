@@ -161,7 +161,7 @@ def robot(a,bw,bw1,b):
 			return(move_all[random.randint(0,7)])
 	all_ma0 = ['02222','22220','22022','20222','22202','01111','11110','11011','11101','10111']
 	all_ma1 = ['022200','002220','020220','022020']
-	all_ma2 = ['011100','001110','010110','011010']
+	all_ma2 = ['2011100','0011102','010110','011010','01110']
 	all_ma3 = ['22200','02220','20220','22020']
 	all_ma4 = ['02200','2020','11100','01110','10110','11010','01100','00111']#,'000110','011000','001100','010100','001010']
 	all_ma5 = ['20']
@@ -169,6 +169,8 @@ def robot(a,bw,bw1,b):
 	for i in range(len(all_ma)):
 		if i == 1:
 			move = robot_h(all_ma[i],a,1)
+		elif i == 2:
+			move = robot_h(all_ma[i],a,2)
 		else:
 			move = robot_h(all_ma[i],a,0)
 		if move:
@@ -177,7 +179,7 @@ def robot(a,bw,bw1,b):
 			else:
 				return '%s' % b[int(move[:2])] + '%s' % (int(move[3:])+1)
 
-		
+
 def robot_h(all_ma,a,nu):
 	b = ['a','b','c','d','e','f','g','h','i','j','k','l','m']
 	all_ind = []
@@ -235,12 +237,16 @@ def choose(all_move,a):
 	for i in all_move:
 		if i.index(' ') == 1:
 			x = a[0][int(i[0])]
-			y = a[1][int(i[1:])]
+			y = a[1][int(i[1:])]				
+			z1 = a[2][int(i[0])+int(i[1:])]
+			z2 = a[3][12+int(i[0])-int(i[1:])]
 		else:
 			x = a[0][int(i[:2])]
 			y = a[1][int(i[3:])]
-
-		grade_all.append(x.count('2')-x.count('1')+y.count('2')-y.count('1'))
+			z1 = a[2][int(i[:2])+int(i[3:])]
+			z2 = a[3][12+int(i[:2])-int(i[3:])]
+		print(x,y,z1,z2)
+		grade_all.append(x.count(2)*2+x.count(1)+y.count(2)*2+y.count(1)+z1.count(2)*2+z1.count(1)+z2.count(2)*2+z2.count(1))
 
 	ma = 0
 	for i in grade_all:
