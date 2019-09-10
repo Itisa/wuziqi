@@ -50,6 +50,11 @@ def play_wuziqi():
 			print(move)
 			if not move:
 				move = input('nextwhite?\n').lower()
+			xx = int(move[1:])-1
+			yy = b.index(move[0])
+			if board[xx][yy] != '.':
+				print('Error:there has been placed')
+				move = input('nextwhite?\n').lower()
 
 		if move == 'aaa':
 			break			
@@ -161,8 +166,17 @@ def if_win(a,bw):
 					fi = 0
 
 def robot(a,bw,bw1,b):
-	def locate(i,i1,s1,line):
-		lo = '%s' % (line.find(s1)+s1.find('0'))
+	def locate(i,i1,s1,line,reverse=False):
+		if reverse == True:
+			if i <= 1:
+				lo = '%s' % (12-line.find(s1)-s1.find('0'))
+			else:
+				if i >= 12:
+					lo = '%s' % (26-i1-line.find(s1)-s1.find('0'))
+				else:
+					lo = '%s' % (i1-line.find(s1)-s1.find('0'))					
+		else:
+			lo = '%s' % (line.find(s1)+s1.find('0'))
 		if i == 0:
 			move = b[int(lo)] + '%s' % ((int(i1))+1)
 			# b[i1] + '%s' % (int(lo)+1)
@@ -170,16 +184,16 @@ def robot(a,bw,bw1,b):
 			move = b[i1] + '%s' % (int(lo)+1)
 		elif i == 2:
 			if i1 < 12:
-				move = b[int(lo)] + '%s' %(i1-int(lo))
+				move = b[int(lo)] + '%s' %(i1-int(lo)+1)
 			else:
 				move = b[(12-int(lo))] + '%s' %(i1-11+int(lo))
 		elif i == 3:
 			if i1 >= 12:
-				move = b[int(lo)] + '%s' % (i1-12+int(lo))
+				move = b[int(lo)] + '%s' % (i1-11+int(lo))
 			else:
 				move = b[(12-i1+int(lo))] + '%s' % (int(lo)+1)
 		print('move:',move)
-		print('i:',i,'i1:',i1,'s1:',s1,'line:',line,'lo:',lo)
+		print('i:',i,'i1:',i1,'s1:',s1,'line:',line,'lo:',lo,reverse)
 		return move
 	
 	def robot_h(all_ma):
@@ -187,20 +201,23 @@ def robot(a,bw,bw1,b):
 		all_move = []
 		for li in range(len(a)):
 			for i1 in range(len(a[li])):
-				num = ''
+				num = []
 				for i2 in a[li][i1]:
-					num += '%s' % i2
-				
+					num.append('%s' % i2)
+				numr = num[:]
+				numr.reverse()
+				numr = ''.join(numr)
+				num = ''.join(num)
 				for s1 in all_ma:
 					if s1 in num:
+						return locate(li,i1,s1,num)
+					elif s1 in numr:
+						return locate(li,i1,s1,numr,True)
 						# print('in',s1,li)
 						# for t in range(len(s1)):
 							# if o[t] == '0':							
 								# all_move.append(loc(num.index(s1)+t,li,i1))
-
-						return locate(li,i1,s1,num)
-
-
+						
 						# all_move.append(locate(li,i1,s1,num))
 						# if len(all_move) == 1:
 							# return all_move[0]
@@ -213,9 +230,9 @@ def robot(a,bw,bw1,b):
 			move_all = ['f6','g6','h6','f7','h7','f8','g8','h8']
 			return(move_all[random.randint(0,7)])
 	all_ma0 = ['02222','22220','22022','20222','22202','01111','11110','11011','11101','10111']
-	all_ma1 = ['02220','22200','00222','02022','22020','01110','10110','11010']
+	all_ma1 = ['02220','22200','00222','22020','01110','10110','11010']
 	all_ma2 = ['22200','02220','20220','22020']
-	all_ma3 = ['02200','2020','11100','01110','10110','11010','01100','00111']#,'000110','011000','001100','010100','001010']
+	all_ma3 = ['11100','01110','02200','2020','10110','11010','01100','00111']#,'000110','011000','001100','010100','001010']
 	all_ma4 = ['20']
 	
 	move = robot_h(all_ma0)
@@ -244,37 +261,21 @@ def robot(a,bw,bw1,b):
 	print(1,move)
 	if move:
 		return move
-		# if move.index(' ') == 1:
-		# 	return '%s' % b[int(move[0])] + '%s' % (int(move[1:])+1)
-		# else:
-		# 	return '%s' % b[int(move[:2])] + '%s' % (int(move[3:])+1)
 
 	move = robot_h(all_ma2)
 	print(2,move)
 	if move:
 		return move
-		# if move.index(' ') == 1:
-		# 	return '%s' % b[int(move[0])] + '%s' % (int(move[1:])+1)
-		# else:
-		# 	return '%s' % b[int(move[:2])] + '%s' % (int(move[3:])+1)	
 	
 	move = robot_h(all_ma3)
 	print(3)
 	if move:
 		return move
-		# if move.index(' ') == 1:
-		# 	return '%s' % b[int(move[0])] + '%s' % (int(move[1:])+1)
-		# else:
-		# 	return '%s' % b[int(move[:2])] + '%s' % (int(move[3:])+1)
 
 	move = robot_h(all_ma4)
 	print(4)
 	if move:
 		return move
-		# if move.index(' ') == 1:
-		# 	return '%s' % b[int(move[0])] + '%s' % (int(move[1:])+1)
-		# else:
-		# 	return '%s' % b[int(move[:2])] + '%s' % (int(move[3:])+1)
 	
 def loc(lo,i,i1):
 	print(lo,i,i1)
