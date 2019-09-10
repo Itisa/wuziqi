@@ -3,8 +3,8 @@
 import random
 
 def play_wuziqi():
-
-	a = make_board()
+	first = 1 #1:player first 2:computer first
+	board = make_board()
 	x = []
 	for i in range(13):
 		x.append([])
@@ -40,17 +40,19 @@ def play_wuziqi():
 	bw = 0
 	
 	while True:
-		btn = bw%2+1		
-		print_board(a)
+		btn = bw%2+first%2
+		print('btn:',btn)
+		print_board(board)
 		if btn == 1:
 			move = input('next?\n').lower()
 		else:
 			move = robot([x,y,z1,z2],bw%2+1,bw,b)
+			print(move)
 			if not move:
 				move = input('nextwhite?\n').lower()
 
 		if move == 'aaa':
-				break			
+			break			
 		elif move == 'save':
 			break
 		
@@ -58,26 +60,17 @@ def play_wuziqi():
 			if int(move[1:]) <= 13:
 				pass
 			else:
-				print('error')
+				print('Error:input type error')
 				continue		
-		else:	
-			print('error')
-			continue
-		if len(move) == 2 or len(move) == 3:
-			if move[0] in b or move[-1] in b:
-				pass
-			else:
-				print('error')
-				continue
 		else:
-			print('error')
-			continuex
+			print('Error:input type error')
+			continue
 
 		if move[0] in b:
 			xx = int(move[1:])-1
 			yy = b.index(move[0])
-			if a[xx][yy] != '.':
-				print('error')
+			if board[xx][yy] != '.':
+				print('Error:there has been placed')
 				continue
 			else:
 				if xx+yy >= 12:
@@ -90,40 +83,53 @@ def play_wuziqi():
 					z2[12+xx-yy][xx] = btn
 				x[xx][yy] = btn
 				y[yy][xx] = btn
-				if btn == 1:
-					a[xx][yy] = 'O'
+				if btn == first:
+					board[xx][yy] = 'O'
 				else:
-					a[xx][yy] = 'X'
+					board[xx][yy] = 'X'
+				# print('X'*50)
+				# for line in x:
+				# 	print(line)
+				# print('X'*50)
 		
 		else:
 			xx = int(move[:-1])-1
 			yy = b.index(move[-1])
-			if a[xx][yy] != '.':
-				print('error')
+			if board[xx][yy] != '.':
+				print('Error:there has been placed')
 				continue
 			else:
 				x[xx][yy] = btn
 				y[yy][xx] = btn
 				z1[xx+yy][13-xx] = btn
 				z2[12+xx-yy][xx] = btn
-				a[xx][yy] = btn
+				board[xx][yy] = btn
 		
 		
 		if if_win([x,y,z1,z2],btn):
-			print_board(a)
-			print('%s win' % btn)
+			print_board(board)
+			if btn == first:
+				if first == 1:
+					print('win')
+				else:
+					print('lose')	
+			else:
+				if first == 1:
+					print('lose')
+				else:
+					print('win')
 			break
 		
 
 		bw += 1
 
 def make_board():
-	a = []	
+	board = []	
 	for i in range(13):
-		a.append([])
+		board.append([])
 		for i1 in range(13):
-			a[-1].append('.')
-	return a
+			board[-1].append('.')
+	return board
 
 def print_board(a):
 	print('\n','   ','A','','B','','C','','D','','E','','F','','G','','H','','I','','J','','K','','L','','M')
@@ -141,6 +147,8 @@ def print_board(a):
 	print('    ','A','','B','','C','','D','','E','','F','','G','','H','','I','','J','','K','','L','','M')
 
 def if_win(a,bw):
+	if bw == 0:
+		bw = 2
 	fi = 0
 	for i in a:
 		for i1 in i:
@@ -153,60 +161,121 @@ def if_win(a,bw):
 					fi = 0
 
 def robot(a,bw,bw1,b):
-	if bw1 == 1:
+	def locate(i,i1,s1,line):
+		lo = '%s' % (line.find(s1)+s1.find('0'))
+		if i == 0:
+			move = b[int(lo)] + '%s' % ((int(i1))+1)
+			# b[i1] + '%s' % (int(lo)+1)
+		elif i == 1:
+			move = b[i1] + '%s' % (int(lo)+1)
+		elif i == 2:
+			if i1 < 12:
+				move = b[int(lo)] + '%s' %(i1-int(lo))
+			else:
+				move = b[(12-int(lo))] + '%s' %(i1-11+int(lo))
+		elif i == 3:
+			if i1 >= 12:
+				move = b[int(lo)] + '%s' % (i1-12+int(lo))
+			else:
+				move = b[(12-i1+int(lo))] + '%s' % (int(lo)+1)
+		print('move:',move)
+		print('i:',i,'i1:',i1,'s1:',s1,'line:',line,'lo:',lo)
+		return move
+	
+	def robot_h(all_ma):
+		all_ind = []
+		all_move = []
+		for li in range(len(a)):
+			for i1 in range(len(a[li])):
+				num = ''
+				for i2 in a[li][i1]:
+					num += '%s' % i2
+				
+				for s1 in all_ma:
+					if s1 in num:
+						# print('in',s1,li)
+						# for t in range(len(s1)):
+							# if o[t] == '0':							
+								# all_move.append(loc(num.index(s1)+t,li,i1))
+
+						return locate(li,i1,s1,num)
+
+
+						# all_move.append(locate(li,i1,s1,num))
+						# if len(all_move) == 1:
+							# return all_move[0]
+						# return choose(all_move,a)
+
+	if bw1 <= 1:
 		if a[0][6][6] == 0:
 			return('g7')
 		else:
 			move_all = ['f6','g6','h6','f7','h7','f8','g8','h8']
 			return(move_all[random.randint(0,7)])
 	all_ma0 = ['02222','22220','22022','20222','22202','01111','11110','11011','11101','10111']
-	all_ma1 = ['022200','002220','020220','022020']
-	all_ma2 = ['2011100','0011102','010110','011010','01110']
-	all_ma3 = ['22200','02220','20220','22020']
-	all_ma4 = ['02200','2020','11100','01110','10110','11010','01100','00111']#,'000110','011000','001100','010100','001010']
-	all_ma5 = ['20']
-	all_ma = [all_ma0,all_ma1,all_ma2,all_ma3,all_ma4,all_ma5]
-	for i in range(len(all_ma)):
-		if i == 1:
-			move = robot_h(all_ma[i],a,1)
-		elif i == 2:
-			move = robot_h(all_ma[i],a,2)
-		else:
-			move = robot_h(all_ma[i],a,0)
-		if move:
-			if move.index(' ') == 1:
-				return '%s' % b[int(move[0])] + '%s' % (int(move[1:])+1)
-			else:
-				return '%s' % b[int(move[:2])] + '%s' % (int(move[3:])+1)
+	all_ma1 = ['02220','22200','00222','02022','22020','01110','10110','11010']
+	all_ma2 = ['22200','02220','20220','22020']
+	all_ma3 = ['02200','2020','11100','01110','10110','11010','01100','00111']#,'000110','011000','001100','010100','001010']
+	all_ma4 = ['20']
+	
+	move = robot_h(all_ma0)
+	print(0)
+	if move:
+		return move
+		# if move.index(' ') == 1:
+		# 	return '%s' % b[int(move[0])] + '%s' % (int(move[1:])+1)
+		# else:
+		# 	return '%s' % b[int(move[:2])] + '%s' % (int(move[3:])+1)
+	
+	def if_4zi():
+		line = ''
+		for i in range(len(a)): #i:each board
+			for i1 in range(len(a[i])): #i1:each board's line
+					
+				line = ''
+				for s1 in a[i][i1]:
+					line += '%s' % s1
+				for s in all_ma0:
+					if s in line:
+						move = locate(i,i1,s,line)
+	# if_4zi()
 
+	move = robot_h(all_ma1)
+	print(1,move)
+	if move:
+		return move
+		# if move.index(' ') == 1:
+		# 	return '%s' % b[int(move[0])] + '%s' % (int(move[1:])+1)
+		# else:
+		# 	return '%s' % b[int(move[:2])] + '%s' % (int(move[3:])+1)
 
-def robot_h(all_ma,a,nu):
-	b = ['a','b','c','d','e','f','g','h','i','j','k','l','m']
-	all_ind = []
-	all_move = []
-	for li in range(len(a)):
-		for i1 in range(len(a[li])):
-			num = ''
-			for i2 in a[li][i1]:
-				num += '%s' % i2
-			
-			for o in all_ma:
-				if o in num:
-					print('in',o,li)
-					if nu == 1:
-						ind = 0
-						for t in o:
-							if t == 0:
-								ind += 1
-								if ind == 2:
-									return loc(num.index(o)+t,li,i1)
+	move = robot_h(all_ma2)
+	print(2,move)
+	if move:
+		return move
+		# if move.index(' ') == 1:
+		# 	return '%s' % b[int(move[0])] + '%s' % (int(move[1:])+1)
+		# else:
+		# 	return '%s' % b[int(move[:2])] + '%s' % (int(move[3:])+1)	
+	
+	move = robot_h(all_ma3)
+	print(3)
+	if move:
+		return move
+		# if move.index(' ') == 1:
+		# 	return '%s' % b[int(move[0])] + '%s' % (int(move[1:])+1)
+		# else:
+		# 	return '%s' % b[int(move[:2])] + '%s' % (int(move[3:])+1)
 
-					for t in range(len(o)):
-						if o[t] == '0':							
-							all_move.append(loc(num.index(o)+t,li,i1))
-					if len(all_move) == 1:
-						return all_move[0]
-					return choose(all_move,a)
+	move = robot_h(all_ma4)
+	print(4)
+	if move:
+		return move
+		# if move.index(' ') == 1:
+		# 	return '%s' % b[int(move[0])] + '%s' % (int(move[1:])+1)
+		# else:
+		# 	return '%s' % b[int(move[:2])] + '%s' % (int(move[3:])+1)
+	
 def loc(lo,i,i1):
 	print(lo,i,i1)
 	if i == 1:
@@ -232,33 +301,29 @@ def loc(lo,i,i1):
 		print(move)
 		return move
 
+
 def choose(all_move,a):
 	grade_all = []
 	for i in all_move:
 		if i.index(' ') == 1:
 			x = a[0][int(i[0])]
-			y = a[1][int(i[1:])]				
-			z1 = a[2][int(i[0])+int(i[1:])]
-			z2 = a[3][12+int(i[0])-int(i[1:])]
+			y = a[1][int(i[1:])]
 		else:
 			x = a[0][int(i[:2])]
 			y = a[1][int(i[3:])]
-			z1 = a[2][int(i[:2])+int(i[3:])]
-			z2 = a[3][12+int(i[:2])-int(i[3:])]
-		print(x,y,z1,z2)
-		grade_all.append(x.count(2)*2+x.count(1)+y.count(2)*2+y.count(1)+z1.count(2)*2+z1.count(1)+z2.count(2)*2+z2.count(1))
+
+		grade_all.append(x.count('2')-x.count('1')+y.count('2')-y.count('1'))
 
 	ma = 0
 	for i in grade_all:
 		if i > ma:
 			ma = i
 	co = grade_all.count(ma)
-	print(grade_all,ma,co,all_move,end = '')
+	print(grade_all,ma,co,all_move)
 	if co == 1:
 		return all_move[grade_all.index(ma)]
 	else:
 		ind = random.randint(1,co)
-		print(ind)
 		ix = 0
 		i1 = -1
 		for i in grade_all:
